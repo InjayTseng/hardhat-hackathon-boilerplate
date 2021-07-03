@@ -18,6 +18,7 @@ import { Transfer } from "./Transfer";
 import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
+import { Magic } from 'magic-sdk';
 
 // This is the Hardhat Network id, you might change it in the hardhat.config.js
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
@@ -26,6 +27,11 @@ const HARDHAT_NETWORK_ID = '31337';
 
 // This is an error code that indicates that the user canceled a transaction
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
+
+
+
+
+const m = new Magic('API_KEY'); // ✨
 
 // This component is in charge of doing these things:
 //   1. It connects to the user's wallet
@@ -64,6 +70,17 @@ export class Dapp extends React.Component {
     if (window.ethereum === undefined) {
       return <NoWalletDetected />;
     }
+
+    // login.js
+const login = useCallback(async () => {
+  await magic.auth.loginWithMagicLink({
+    email,
+    redirectURI: new URL("/callback", window.location.origin).href,
+  });
+  history.push("/");
+}, [email]);
+
+
 
     // The next thing we need to do, is to ask the user to connect their wallet.
     // When the wallet gets connected, we are going to save the users's address
@@ -179,6 +196,7 @@ export class Dapp extends React.Component {
 
     // First we check the network
     if (!this._checkNetwork()) {
+      //console.log(this._checkNetwork());
       return;
     }
 
@@ -360,6 +378,7 @@ export class Dapp extends React.Component {
       return true;
     }
 
+    console.log("NetworkID=",HARDHAT_NETWORK_ID);
     this.setState({ 
       networkError: 'Please connect Metamask to Localhost:8545'
     });
